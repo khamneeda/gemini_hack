@@ -317,14 +317,19 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ isVisible, searchQuery
           <div className="analysis-card" style={{flex:1}}>
             <div className="analysis-card-header">💬 Community Archive <span className="view-all">See All →</span></div>
             <div className="thread-list">
-              {sortedPosts.map(post => (
+              {sortedPosts.slice(0, 3).map(post => (
                 <div className="thread-item" key={post.id}>
-                  <div className="thread-content" onClick={() => onNavigate('detail')}>
-                    <div className="thread-meta">
-                      <span className="thread-user">{post.author}</span>
-                      <span className="thread-time">{post.timestamp}</span>
+                  <div className="thread-content" onClick={() => onNavigate('detail')} style={{display:'flex',gap:'.75rem',alignItems:'flex-start'}}>
+                    {post.thumbnail && (
+                      <img src={post.thumbnail} alt="" style={{width:48,height:48,borderRadius:8,objectFit:'cover',flexShrink:0}} />
+                    )}
+                    <div>
+                      <div className="thread-meta">
+                        <span className="thread-user">{post.author}</span>
+                        <span className="thread-time">{post.timestamp}</span>
+                      </div>
+                      <div className="thread-text">{post.content}</div>
                     </div>
-                    <div className="thread-text">{post.content}</div>
                   </div>
                   <div className="thread-actions">
                     <button className={`vote-btn recommend ${votedItems[post.id] === 'recommend' ? 'active' : ''}`} onClick={() => handleVote(post.id, 'recommend')}>

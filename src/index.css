@@ -1,35 +1,40 @@
 :root {
-  --bg: #07080f;
-  --bg2: #0d0f1a;
-  --surface: #111420;
-  --surface2: #181c2e;
-  --border: rgba(255,255,255,0.07);
-  --accent: #6c4ff6;
-  --accent2: #00e5c8;
-  --accent3: #ff4d6d;
-  --text: #e8eaf2;
-  --muted: #6b6f85;
-  --node1: #6c4ff6;
-  --node2: #00e5c8;
-  --node3: #ff4d6d;
-  --node4: #f7c948;
-  --node5: #7eb8ff;
+  --bg: #05060b;
+  --bg2: #0a0c16;
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-glass: rgba(255, 255, 255, 0.05);
+  --surface2: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.1);
+  --accent: #ff007a; /* K-Pop Neon Pink */
+  --accent-glow: rgba(255, 0, 122, 0.4);
+  --accent2: #7000ff; /* Electric Purple */
+  --accent3: #00d4ff; /* Bright Sky Blue */
+  --text: #ffffff;
+  --muted: rgba(255, 255, 255, 0.5);
+
+  --grad-primary: linear-gradient(135deg, #ff007a 0%, #7000ff 100%);
+  --grad-mesh: radial-gradient(at 0% 0%, rgba(255, 0, 122, 0.15) 0%, transparent 50%),
+               radial-gradient(at 100% 0%, rgba(112, 0, 255, 0.15) 0%, transparent 50%),
+               radial-gradient(at 50% 100%, rgba(0, 212, 255, 0.1) 0%, transparent 50%);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   background: var(--bg);
+  background-image: var(--grad-mesh);
+  background-attachment: fixed;
   color: var(--text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Urbanist', sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ── NOISE OVERLAY ── */
+/* ── NOISE OVERLAY (Subtler) ── */
 body::before {
   content: '';
   position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none; z-index: 9999; opacity: .5;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999; opacity: .3;
 }

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { initializePosts, savePosts } from '../services/postStorage';
+import type { CommunityPost } from '../types/post';
 
 interface AddDiggingPageProps {
   isVisible: boolean;
@@ -7,6 +9,32 @@ interface AddDiggingPageProps {
 
 export const AddDiggingPage: React.FC<AddDiggingPageProps> = ({ isVisible, onNavigate }) => {
   const [relationship, setRelationship] = useState('theory');
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [publishing, setPublishing] = useState(false);
+
+  const handlePublish = () => {
+    if (!title.trim() || !body.trim()) return;
+    setPublishing(true);
+
+    const posts = initializePosts();
+    const newPost: CommunityPost = {
+      id: `post-${Date.now()}`,
+      author: `@user_${Math.random().toString(36).slice(2, 7)}`,
+      content: `[${title.trim()}] ${body.trim()}`,
+      entity: 'LE SSERAFIM',
+      timestamp: new Date().toISOString(),
+      status: 'pending',
+      factCheckResult: null,
+      hypeScore: 0,
+    };
+    savePosts([newPost, ...posts]);
+
+    setTitle('');
+    setBody('');
+    setPublishing(false);
+    onNavigate('results');
+  };
 
   return (
     <div id="page-add-digging" className={`page ${!isVisible ? 'hidden' : ''}`}>
@@ -409,10 +437,12 @@ export const AddDiggingPage: React.FC<AddDiggingPageProps> = ({ isVisible, onNav
               {/* Main Editor Area */}
               <div className="editor-box">
                 <div className="editor-header">
-                  <input 
-                    type="text" 
-                    className="title-input" 
+                  <input
+                    type="text"
+                    className="title-input"
                     placeholder="What's your new discovery or question?"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                   />
                 </div>
                 
@@ -431,9 +461,11 @@ export const AddDiggingPage: React.FC<AddDiggingPageProps> = ({ isVisible, onNav
                 </div>
 
                 <div className="text-area-container">
-                  <textarea 
-                    className="main-textarea" 
+                  <textarea
+                    className="main-textarea"
                     placeholder="Start typing your theory... Use '@' to mention other nodes or users."
+                    value={body}
+                    onChange={(e) => setBody(e.target.value)}
                   />
                 </div>
 
@@ -454,8 +486,13 @@ export const AddDiggingPage: React.FC<AddDiggingPageProps> = ({ isVisible, onNav
                 </div>
                 <div style={{ display: 'flex', gap: '1rem' }}>
                   <button className="btn-ghost" style={{ padding: '0.6rem 1.5rem' }}>Save Draft</button>
-                  <button className="btn-primary" style={{ padding: '0.6rem 2rem', fontWeight: '700' }}>
-                    Publish Dig 🚀
+                  <button
+                    className="btn-primary"
+                    style={{ padding: '0.6rem 2rem', fontWeight: '700', opacity: (!title.trim() || !body.trim()) ? 0.5 : 1 }}
+                    disabled={!title.trim() || !body.trim() || publishing}
+                    onClick={handlePublish}
+                  >
+                    {publishing ? 'Publishing...' : 'Publish Dig 🚀'}
                   </button>
                 </div>
               </div>

@@ -131,6 +131,7 @@ export const SEED_POSTS: CommunityPost[] = [
     status: 'pending',
     factCheckResult: null,
     hypeScore: 312,
+    thumbnail: '/image1.png',
   },
   {
     id: 'post-002',
@@ -251,6 +252,7 @@ export const SEED_POSTS: CommunityPost[] = [
     status: 'pending',
     factCheckResult: null,
     hypeScore: 128,
+    thumbnail: '/image2.png',
   },
   {
     id: 'post-013',
