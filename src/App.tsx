@@ -38,6 +38,7 @@ function App() {
 
       <ResultsPage
         isVisible={currentPage === 'results'}
+        searchQuery={searchQuery}
         onNavigate={showPage}
       />
 
