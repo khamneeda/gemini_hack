@@ -143,6 +143,64 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ isVisible, searchQuery
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
+        /* ── Layout: viewport-fixed container, right col scrolls ── */
+        #page-results {
+          height: 100vh;
+          overflow: hidden;
+        }
+        #page-results .results-section {
+          min-height: unset !important;
+          height: 100%;
+          box-sizing: border-box;
+          overflow: hidden;
+          align-items: stretch !important;
+        }
+        #page-results .graph-panel {
+          height: 100%;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+        #page-results .right-col {
+          height: 100%;
+          min-height: 0;
+          overflow: hidden;
+          max-height: none;
+        }
+        #page-results .analysis-card {
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+        }
+        #page-results .analysis-body,
+        #page-results .media-list,
+        #page-results .thread-list {
+          scrollbar-width: thin;
+          scrollbar-color: var(--border) transparent;
+        }
+        #page-results .analysis-body {
+          max-height: 240px;
+          overflow-y: auto;
+        }
+        #page-results .media-list {
+          max-height: 280px;
+          overflow-y: auto;
+        }
+        #page-results .thread-list {
+          flex: 1;
+          min-height: 0;
+          overflow-y: auto;
+        }
+        #page-results .analysis-body::-webkit-scrollbar,
+        #page-results .media-list::-webkit-scrollbar,
+        #page-results .thread-list::-webkit-scrollbar { width: 4px; }
+        #page-results .analysis-body::-webkit-scrollbar-track,
+        #page-results .media-list::-webkit-scrollbar-track,
+        #page-results .thread-list::-webkit-scrollbar-track { background: transparent; }
+        #page-results .analysis-body::-webkit-scrollbar-thumb,
+        #page-results .media-list::-webkit-scrollbar-thumb,
+        #page-results .thread-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
         .media-list { display: flex; flex-direction: column; }
         .media-item {
           display: flex; align-items: flex-start; gap: .75rem;
