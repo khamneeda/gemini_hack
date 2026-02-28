@@ -4,8 +4,9 @@ import { Navbar } from './components/Navbar'
 import { HomePage } from './pages/HomePage'
 import { ResultsPage } from './pages/ResultsPage'
 import { DetailPage } from './pages/DetailPage'
+import { AdminPage } from './pages/AdminPage'
 
-type Page = 'home' | 'results' | 'detail';
+type Page = 'home' | 'results' | 'detail' | 'admin';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -39,8 +40,13 @@ function App() {
         onNavigate={showPage}
       />
 
-      <DetailPage 
+      <DetailPage
         isVisible={currentPage === 'detail'}
+        onNavigate={() => showPage('home')}
+      />
+
+      <AdminPage
+        isVisible={currentPage === 'admin'}
         onNavigate={() => showPage('home')}
       />
     </div>
