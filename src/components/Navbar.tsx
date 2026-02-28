@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface NavbarProps {
-  onNavigate: (page: 'home' | 'results' | 'detail' | 'add') => void;
+  onNavigate: (page: 'home' | 'results' | 'detail' | 'admin' | 'add') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
@@ -13,6 +13,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
       <div className="nav-links">
         <a onClick={() => onNavigate('home')}>Explore</a>
         <a>Community</a>
+        <a onClick={() => onNavigate('admin')}>Admin</a>
         <a>My Digs</a>
       </div>
       <div className="nav-right">

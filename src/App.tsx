@@ -4,9 +4,10 @@ import { Navbar } from './components/Navbar'
 import { HomePage } from './pages/HomePage'
 import { ResultsPage } from './pages/ResultsPage'
 import { DetailPage } from './pages/DetailPage'
+import { AdminPage } from './pages/AdminPage'
 import { AddDiggingPage } from './pages/AddDiggingPage'
 
-type Page = 'home' | 'results' | 'detail' | 'add';
+type Page = 'home' | 'results' | 'detail' | 'admin' | 'add';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -27,7 +28,7 @@ function App() {
     <div className="app-container">
       <Navbar onNavigate={showPage} />
 
-      <HomePage 
+      <HomePage
         isVisible={currentPage === 'home'}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -35,18 +36,23 @@ function App() {
         onNavigate={showPage}
       />
 
-      <ResultsPage 
+      <ResultsPage
         isVisible={currentPage === 'results'}
         searchQuery={searchQuery}
         onNavigate={showPage}
       />
 
-      <DetailPage 
+      <DetailPage
         isVisible={currentPage === 'detail'}
         onNavigate={() => showPage('home')}
       />
 
-      <AddDiggingPage 
+      <AdminPage
+        isVisible={currentPage === 'admin'}
+        onNavigate={() => showPage('home')}
+      />
+
+      <AddDiggingPage
         isVisible={currentPage === 'add'}
         onNavigate={showPage}
       />

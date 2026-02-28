@@ -1,74 +1,64 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import type { RelCard } from '../types/data';
+import type { CommunityPost } from '../types/post';
+import { initializePosts, loadRelCards } from '../services/postStorage';
 
 interface DetailPageProps {
   isVisible: boolean;
   onNavigate: (page: 'home') => void;
 }
 
-// Sample data for the timeline
-const timelineAnalyses = [
-  {
-    avatar: 'FN',
-    avatarBg: 'var(--accent)',
-    user: 'Fearnot99',
-    title: 'From IZ*ONE to FEARLESS: A New Beginning',
-    text: "The debut concept masterfully incorporates the real-life journeys of Sakura and Chaewon, recasting their past experiences not as baggage, but as the foundation for their \'fearless\' identity. This narrative resonated deeply with fans who followed their careers from Produce 48.",
-  },
-  {
-    avatar: 'MV',
-    avatarBg: '#00e5c8',
-    user: 'MV_Sleuth',
-    title: 'Symbolism in \'UNFORGIVEN\': A Western Remixed',
-    text: "The music video is a visual feast, blending classic Western film tropes with modern K-pop aesthetics. The fallen angel wings, the cowboy hats, and the desert landscapes all serve as metaphors for the group carving out their own path, unforgiven and unbothered.",
-  },
-  {
-    avatar: 'CH',
-    avatarBg: '#f7c948',
-    user: 'ChoreoCritique',
-    title: 'The \'EASY\' Choreography: Redefining Effortless',
-    text: "While the song is titled \'EASY,\' the old-school hip-hop choreography is anything but. This intentional irony highlights the group\'s message: what looks effortless on the surface is the result of immense hard work and dedication behind the scenes.",
-  },
-  {
-    avatar: 'YJ',
-    avatarBg: '#ff8fa3',
-    user: 'YunjinLover',
-    title: "The Power of Yunjin's Self-Produced Tracks",
-    text: "Tracks like \'Raise y_our glass\' and \'I ≠ DOLL\' offer a raw, unfiltered look into the pressures of idol life. They add a layer of authenticity to the group\'s discography that is both rare and incredibly powerful, connecting with listeners on a deeper level."
-  }
-];
-
 export const DetailPage: React.FC<DetailPageProps> = ({ isVisible, onNavigate }) => {
+  const [posts, setPosts] = useState<CommunityPost[]>([]);
+  const [relCards, setRelCards] = useState<RelCard[]>([]);
+
+  useEffect(() => {
+    setPosts(initializePosts());
+    setRelCards(loadRelCards());
+  }, []);
+
+  const sortedPosts = [...posts].sort((a, b) => b.hypeScore - a.hypeScore);
+
   return (
     <div id="page-detail" className={`page ${!isVisible ? 'hidden' : ''}`}>
        <style>{`
-        .timeline-entry-content {
-          margin-top: .75rem;
-          padding-left: 2.75rem; /* Align with text, offset by avatar */
+        .community-thread {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: 1rem 1.25rem;
+          margin-bottom: .75rem;
+          transition: border-color .2s;
         }
-        .timeline-entry-title {
-          font-size: 1.05rem;
-          font-weight: 600;
-          color: var(--text-primary);
+        .community-thread:hover {
+          border-color: rgba(108,79,246,.3);
+        }
+        .community-thread .thread-meta {
+          display: flex;
+          align-items: center;
+          gap: .5rem;
           margin-bottom: .4rem;
         }
-        .timeline-entry-text {
-          font-size: .88rem;
-          color: var(--text-secondary);
+        .community-thread .thread-user {
+          font-size: .78rem;
+          font-weight: 600;
+          font-family: 'Space Mono', monospace;
+          color: var(--accent2);
+        }
+        .community-thread .thread-time {
+          font-size: .68rem;
+          color: var(--muted);
+        }
+        .community-thread .thread-text {
+          font-size: .85rem;
           line-height: 1.6;
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          color: #a8abc0;
         }
-        .timeline-entry {
-          padding-bottom: 1.5rem;
-          margin-bottom: 1.5rem;
-          border-bottom: 1px solid var(--border);
-        }
-        .timeline-entry:last-child {
-          border-bottom: none;
-          margin-bottom: 0;
+        .community-thread .thread-recs {
+          font-size: .72rem;
+          color: var(--muted);
+          font-family: 'Space Mono', monospace;
+          margin-top: .4rem;
         }
       `}</style>
       <div style={{paddingTop:'58px'}}>
@@ -97,37 +87,27 @@ export const DetailPage: React.FC<DetailPageProps> = ({ isVisible, onNavigate })
               <div className="stat-item">📝 <strong>2.1k</strong> Contributions</div>
               <div className="stat-item">🕸 <strong>128</strong> Nodes</div>
             </div>
-            <div className="section-title">Curated Analysis Timeline</div>
-            <div className="timeline">
-              {timelineAnalyses.map((item, index) => (
-                <div className="timeline-entry" key={index}>
-                  <div className="timeline-entry-header">
-                    <div className="t-avatar" style={{ background: item.avatarBg }}>{item.avatar}</div>
-                    <span className="t-name">{item.user}</span>
-                  </div>
-                  <div className="timeline-entry-content">
-                    <div className="timeline-entry-title">{item.title}</div>
-                    <div className="timeline-entry-text">{item.text}</div>
-                  </div>
+            <div className="section-title">Community Posts</div>
+            {sortedPosts.map((post) => (
+              <div className="community-thread" key={post.id}>
+                <div className="thread-meta">
+                  <span className="thread-user">{post.author}</span>
+                  <span className="thread-time">{post.timestamp}</span>
                 </div>
-              ))}
-            </div>
+                <div className="thread-text">{post.content}</div>
+                <div className="thread-recs">▲ {post.hypeScore}</div>
+              </div>
+            ))}
           </div>
 
           <div className="detail-sidebar">
             <div className="section-title">Relational Navigation</div>
-            <div className="rel-card">
-              <div className="rel-card-title">HYBE Corporation</div>
-              <div className="rel-card-meta">Parent Company · 45 nodes</div>
-            </div>
-             <div className="rel-card">
-              <div className="rel-card-title">NewJeans</div>
-              <div className="rel-card-meta">Sister Group · 32 nodes</div>
-            </div>
-            <div className="rel-card">
-              <div className="rel-card-title">UNFORGIVEN (Album)</div>
-              <div className="rel-card-meta">Related Concept · 12 nodes</div>
-            </div>
+            {relCards.map((card) => (
+              <div className="rel-card" key={card.id}>
+                <div className="rel-card-title">{card.title}</div>
+                <div className="rel-card-meta">{card.meta}</div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

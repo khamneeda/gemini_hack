@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { loadHints } from '../services/postStorage';
 
 interface SearchBarProps {
   value: string;
@@ -8,14 +9,18 @@ interface SearchBarProps {
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onSearch, onHintClick }) => {
-  const hints = ["LE SSERAFIM comeback", "NewJeans new album", "BTS members", "HYBE artists", "ADOR"];
+  const [hints, setHints] = useState<string[]>([]);
+
+  useEffect(() => {
+    setHints(loadHints());
+  }, []);
 
   return (
     <div className="search-section">
       <div className="search-wrap">
-        <input 
-          type="text" 
-          placeholder="Search for K-pop artists, songs, and news!" 
+        <input
+          type="text"
+          placeholder="Search for K-pop artists, songs, and news!"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && onSearch()}

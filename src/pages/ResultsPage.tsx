@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { KnowledgeGraph } from '../KnowledgeGraph';
 import { useGeminiAnalysis } from '../hooks/useGeminiAnalysis';
+import { loadNodes, loadEdges, initializePosts, savePosts } from '../services/postStorage';
+import type { GraphNode, GraphEdge } from '../types/data';
+import type { CommunityPost } from '../types/post';
+        
 
 interface Thread {
   id: number;
@@ -48,7 +52,10 @@ interface ResultsPageProps {
 
 export const ResultsPage: React.FC<ResultsPageProps> = ({ isVisible, searchQuery, onNavigate }) => {
   const [threads, setThreads] = useState<Thread[]>(initialThreads);
-  const [votedItems, setVotedItems] = useState<Record<number, 'recommend' | 'decline'>>({});
+  const [nodes, setNodes] = useState<GraphNode[]>([]);
+  const [edges, setEdges] = useState<GraphEdge[]>([]);
+  const [posts, setPosts] = useState<CommunityPost[]>([]);
+  const [votedItems, setVotedItems] = useState<Record<string, 'recommend' | 'decline'>>({});
 
   const entityName = searchQuery?.trim() || 'LE SSERAFIM';
   const contentToAnalyze = buildAnalysisContent(entityName, initialThreads);
@@ -58,26 +65,34 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ isVisible, searchQuery
     contentToAnalyze,
     enabled: isVisible,
   });
+  
+  useEffect(() => {
+    setNodes(loadNodes());
+    setEdges(loadEdges());
+    setPosts(initializePosts());
+  }, []);
 
-  const handleVote = (id: number, voteType: 'recommend' | 'decline') => {
+  const handleVote = (id: string, voteType: 'recommend' | 'decline') => {
     const currentVote = votedItems[id];
 
-    setThreads(prevThreads =>
-      prevThreads.map(thread => {
-        if (thread.id === id) {
-          let newRecommendations = thread.recommendations;
+    setPosts(prevPosts => {
+      const updated = prevPosts.map(post => {
+        if (post.id === id) {
+          let newScore = post.hypeScore;
           if (voteType === 'recommend') {
-            if (currentVote === 'recommend') newRecommendations--;
-            else if (currentVote === 'decline') newRecommendations++;
-            else newRecommendations++;
+            if (currentVote === 'recommend') newScore--;
+            else if (currentVote === 'decline') newScore++;
+            else newScore++;
           } else {
-            if (currentVote === 'recommend') newRecommendations--;
+            if (currentVote === 'recommend') newScore--;
           }
-          return { ...thread, recommendations: newRecommendations };
+          return { ...post, hypeScore: newScore };
         }
-        return thread;
-      })
-    );
+        return post;
+      });
+      savePosts(updated);
+      return updated;
+    });
 
     setVotedItems(prevVoted => {
       const newVoted = { ...prevVoted };
@@ -87,7 +102,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ isVisible, searchQuery
     });
   };
 
-  const sortedThreads = [...threads].sort((a, b) => b.recommendations - a.recommendations);
+  const sortedPosts = [...posts].sort((a, b) => b.hypeScore - a.hypeScore);
 
   return (
     <div id="page-results" className={`page ${!isVisible ? 'hidden' : ''}`}>
@@ -248,7 +263,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ isVisible, searchQuery
             <span className="badge badge-teal">HYBE</span>
             <button className="btn-ghost" style={{marginLeft:'auto',fontSize:'.75rem'}} onClick={() => onNavigate('detail')}>+ Edit Entry</button>
           </div>
-          <KnowledgeGraph />
+          <KnowledgeGraph initialNodes={nodes} edges={edges} />
           <div style={{padding:'.75rem 1.25rem',borderTop:'1px solid var(--border)',display:'flex',gap:'.5rem'}}>
             <button className="btn-ghost" style={{fontSize:'.72rem',padding:'.3rem .7rem'}}>+ Add Node</button>
             <button className="btn-ghost" style={{fontSize:'.72rem',padding:'.3rem .7rem'}}>⚙ Layout</button>
@@ -359,19 +374,19 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ isVisible, searchQuery
           <div className="analysis-card" style={{flex:1}}>
             <div className="analysis-card-header">💬 Community Archive <span className="view-all">See All →</span></div>
             <div className="thread-list">
-              {sortedThreads.map(thread => (
-                <div className="thread-item" key={thread.id}>
+              {sortedPosts.map(post => (
+                <div className="thread-item" key={post.id}>
                   <div className="thread-content" onClick={() => onNavigate('detail')}>
                     <div className="thread-meta">
-                      <span className="thread-user">{thread.user}</span>
-                      <span className="thread-time">{thread.time}</span>
+                      <span className="thread-user">{post.author}</span>
+                      <span className="thread-time">{post.timestamp}</span>
                     </div>
-                    <div className="thread-text">{thread.text}</div>
+                    <div className="thread-text">{post.content}</div>
                   </div>
                   <div className="thread-actions">
-                    <button className={`vote-btn recommend ${votedItems[thread.id] === 'recommend' ? 'active' : ''}`} onClick={() => handleVote(thread.id, 'recommend')}>
+                    <button className={`vote-btn recommend ${votedItems[post.id] === 'recommend' ? 'active' : ''}`} onClick={() => handleVote(post.id, 'recommend')}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5m-7 7l7-7 7 7"/></svg>
-                      <span>{thread.recommendations}</span>
+                      <span>{post.hypeScore}</span>
                     </button>
                     <button className={`vote-btn decline ${votedItems[thread.id] === 'decline' ? 'active' : ''}`} onClick={() => handleVote(thread.id, 'decline')}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14m-7-7l7 7 7-7"/></svg>

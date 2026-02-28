@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { SearchBar } from '../components/SearchBar';
+import { loadPreviews } from '../services/postStorage';
+import type { PreviewCard } from '../types/data';
 
 interface HomePageProps {
   searchQuery: string;
@@ -9,13 +11,19 @@ interface HomePageProps {
   isVisible: boolean;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ 
-  searchQuery, 
-  setSearchQuery, 
-  onSearch, 
-  onNavigate, 
-  isVisible 
+export const HomePage: React.FC<HomePageProps> = ({
+  searchQuery,
+  setSearchQuery,
+  onSearch,
+  onNavigate,
+  isVisible
 }) => {
+  const [previews, setPreviews] = useState<PreviewCard[]>([]);
+
+  useEffect(() => {
+    setPreviews(loadPreviews());
+  }, []);
+
   return (
     <div id="page-home" className={`page ${!isVisible ? 'hidden' : ''}`}>
       <section className="hero">
@@ -31,13 +39,13 @@ export const HomePage: React.FC<HomePageProps> = ({
           <p className="hero-sub">Search any entity — artist, group, concept — and explore its relational web through community-curated analysis.</p>
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
-            <SearchBar 
-              value={searchQuery} 
-              onChange={setSearchQuery} 
-              onSearch={onSearch} 
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSearch={onSearch}
               onHintClick={(hint) => setSearchQuery(hint)}
             />
-            
+
             <button className="btn-primary" style={{ padding: '0.8rem 2.5rem', fontSize: '1rem', fontWeight: '700' }} onClick={() => onNavigate('add')}>
               Start Digging 🚀
             </button>
@@ -45,26 +53,13 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
 
         <div className="preview-row">
-          <div className="preview-card" onClick={() => onNavigate('results')}>
-            <div className="card-icon" style={{background:'rgba(255,77,109,.15)'}}>🎤</div>
-            <div className="card-title">LE SSERAFIM</div>
-            <div className="card-meta">5 members · HYBE</div>
-          </div>
-          <div className="preview-card" onClick={() => onNavigate('results')}>
-            <div className="card-icon" style={{background:'rgba(247,201,72,.1)'}}>🐰</div>
-            <div className="card-title">NewJeans</div>
-            <div className="card-meta">5 members · ADOR</div>
-          </div>
-          <div className="preview-card" onClick={() => onNavigate('results')}>
-            <div className="card-icon" style={{background:'rgba(0,229,200,.1)'}}>💜</div>
-            <div className="card-title">BTS</div>
-            <div className="card-meta">7 members · HYBE</div>
-          </div>
-          <div className="preview-card" onClick={() => onNavigate('results')}>
-            <div className="card-icon" style={{background:'rgba(108,79,246,.1)'}}>🏢</div>
-            <div className="card-title">HYBE Corporation</div>
-            <div className="card-meta">Record Label · South Korea</div>
-          </div>
+          {previews.map((card) => (
+            <div className="preview-card" key={card.id} onClick={() => onNavigate('results')}>
+              <div className="card-icon" style={{background: card.bgColor}}>{card.icon}</div>
+              <div className="card-title">{card.title}</div>
+              <div className="card-meta">{card.meta}</div>
+            </div>
+          ))}
         </div>
 
         <div className="scroll-hint">
