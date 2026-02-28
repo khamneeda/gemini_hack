@@ -46,22 +46,22 @@ export const HomePage: React.FC<HomePageProps> = ({
 
         <div className="preview-row">
           <div className="preview-card" onClick={() => onNavigate('results')}>
-            <div className="card-icon" style={{background:'rgba(255,77,109,.15)'}}>🎤</div>
+            <div className="card-icon" style={{background:'rgba(255,0,122,.2)'}}>🎤</div>
             <div className="card-title">LE SSERAFIM</div>
             <div className="card-meta">5 members · HYBE</div>
           </div>
           <div className="preview-card" onClick={() => onNavigate('results')}>
-            <div className="card-icon" style={{background:'rgba(247,201,72,.1)'}}>🐰</div>
+            <div className="card-icon" style={{background:'rgba(0,212,255,.2)'}}>🐰</div>
             <div className="card-title">NewJeans</div>
             <div className="card-meta">5 members · ADOR</div>
           </div>
           <div className="preview-card" onClick={() => onNavigate('results')}>
-            <div className="card-icon" style={{background:'rgba(0,229,200,.1)'}}>💜</div>
+            <div className="card-icon" style={{background:'rgba(112,0,255,.2)'}}>💜</div>
             <div className="card-title">BTS</div>
             <div className="card-meta">7 members · HYBE</div>
           </div>
           <div className="preview-card" onClick={() => onNavigate('results')}>
-            <div className="card-icon" style={{background:'rgba(108,79,246,.1)'}}>🏢</div>
+            <div className="card-icon" style={{background:'rgba(255,0,200,.2)'}}>🏢</div>
             <div className="card-title">HYBE Corporation</div>
             <div className="card-meta">Record Label · South Korea</div>
           </div>
