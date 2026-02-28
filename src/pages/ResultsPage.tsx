@@ -1,25 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { KnowledgeGraph } from '../KnowledgeGraph';
-
-// Interface for a single thread item
-interface Thread {
-  id: number;
-  user: string;
-  time: string;
-  text: string;
-  recommendations: number;
-}
-
-// Initial data for the community archive, pre-sorted for initial view
-const initialThreads: Thread[] = [
-  { id: 3, user: '@sakura_stan', time: '3 days ago', text: 'Sakura\'s journey from AKB48 to IZ*ONE to LE SSERAFIM is a testament to her resilience. Truly inspiring.', recommendations: 256 },
-  { id: 4, user: '@yunjin_vocals', time: '8 hours ago', text: 'Can we talk about Yunjin\'s self-produced songs? \'Raise y_our glass\' is a masterpiece.', recommendations: 198 },
-  { id: 1, user: '@fearnot99', time: '1 day ago', text: 'The \'UNFORGIVEN\' music video has so many hidden details about their concept. Did anyone else notice...', recommendations: 128 },
-  { id: 5, user: '@newjeans_fan', time: '2 days ago', text: 'The way NewJeans\' MVs for "Cool With You" & "Get Up" are connected is pure genius. Min Heejin\'s mind!', recommendations: 98 },
-  { id: 2, user: '@kpop_theorist', time: '4 hours ago', text: 'Connecting LE SSERAFIM\'s "FEARLESS" concept to the members\' previous career paths is fascinating. It adds so much depth.', recommendations: 72 },
-  { id: 6, user: '@bts_army4ever', time: '5 days ago', text: 'I think the transition from "ON" to "Dynamite" was a pivotal moment for BTS\'s global reach. What do you all think?', recommendations: 45 },
-  { id: 7, user: '@chaewon_leader', time: '1 hour ago', text: 'Chaewon\'s leadership style is so effective. She leads with quiet confidence and a lot of humor.', recommendations: 33 },
-];
+import { loadNodes, loadEdges, initializePosts, savePosts } from '../services/postStorage';
+import type { GraphNode, GraphEdge } from '../types/data';
+import type { CommunityPost } from '../types/post';
 
 interface ResultsPageProps {
   isVisible: boolean;
@@ -27,38 +10,48 @@ interface ResultsPageProps {
 }
 
 export const ResultsPage: React.FC<ResultsPageProps> = ({ isVisible, onNavigate }) => {
-  const [threads, setThreads] = useState<Thread[]>(initialThreads);
-  const [votedItems, setVotedItems] = useState<Record<number, 'recommend' | 'decline'>>({});
+  const [nodes, setNodes] = useState<GraphNode[]>([]);
+  const [edges, setEdges] = useState<GraphEdge[]>([]);
+  const [posts, setPosts] = useState<CommunityPost[]>([]);
+  const [votedItems, setVotedItems] = useState<Record<string, 'recommend' | 'decline'>>({});
 
-  const handleVote = (id: number, voteType: 'recommend' | 'decline') => {
+  useEffect(() => {
+    setNodes(loadNodes());
+    setEdges(loadEdges());
+    setPosts(initializePosts());
+  }, []);
+
+  const handleVote = (id: string, voteType: 'recommend' | 'decline') => {
     const currentVote = votedItems[id];
 
-    setThreads(prevThreads =>
-      prevThreads.map(thread => {
-        if (thread.id === id) {
-          let newRecommendations = thread.recommendations;
+    setPosts(prevPosts => {
+      const updated = prevPosts.map(post => {
+        if (post.id === id) {
+          let newScore = post.hypeScore;
           if (voteType === 'recommend') {
-            if (currentVote === 'recommend') newRecommendations--; // Undo recommendation
-            else if (currentVote === 'decline') newRecommendations++; // Change from decline to recommend
-            else newRecommendations++; // New recommendation
-          } else { // voteType is 'decline'
-            if (currentVote === 'recommend') newRecommendations--; // Change from recommend to decline
+            if (currentVote === 'recommend') newScore--;
+            else if (currentVote === 'decline') newScore++;
+            else newScore++;
+          } else {
+            if (currentVote === 'recommend') newScore--;
           }
-          return { ...thread, recommendations: newRecommendations };
+          return { ...post, hypeScore: newScore };
         }
-        return thread;
-      })
-    );
+        return post;
+      });
+      savePosts(updated);
+      return updated;
+    });
 
     setVotedItems(prevVoted => {
       const newVoted = { ...prevVoted };
-      if (currentVote === voteType) delete newVoted[id]; // Undo vote
-      else newVoted[id] = voteType; // Add new or changed vote
+      if (currentVote === voteType) delete newVoted[id];
+      else newVoted[id] = voteType;
       return newVoted;
     });
   };
 
-  const sortedThreads = [...threads].sort((a, b) => b.recommendations - a.recommendations);
+  const sortedPosts = [...posts].sort((a, b) => b.hypeScore - a.hypeScore);
 
   return (
     <div id="page-results" className={`page ${!isVisible ? 'hidden' : ''}`}>
@@ -95,7 +88,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ isVisible, onNavigate 
             <span className="badge badge-teal">HYBE</span>
             <button className="btn-ghost" style={{marginLeft:'auto',fontSize:'.75rem'}} onClick={() => onNavigate('detail')}>+ Edit Entry</button>
           </div>
-          <KnowledgeGraph />
+          <KnowledgeGraph initialNodes={nodes} edges={edges} />
           <div style={{padding:'.75rem 1.25rem',borderTop:'1px solid var(--border)',display:'flex',gap:'.5rem'}}>
             <button className="btn-ghost" style={{fontSize:'.72rem',padding:'.3rem .7rem'}}>+ Add Node</button>
             <button className="btn-ghost" style={{fontSize:'.72rem',padding:'.3rem .7rem'}}>⚙ Layout</button>
@@ -115,21 +108,21 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ isVisible, onNavigate 
           <div className="analysis-card" style={{flex:1}}>
             <div className="analysis-card-header">💬 Community Archive <span className="view-all">See All →</span></div>
             <div className="thread-list">
-              {sortedThreads.map(thread => (
-                <div className="thread-item" key={thread.id}>
+              {sortedPosts.map(post => (
+                <div className="thread-item" key={post.id}>
                   <div className="thread-content" onClick={() => onNavigate('detail')}>
                     <div className="thread-meta">
-                      <span className="thread-user">{thread.user}</span>
-                      <span className="thread-time">{thread.time}</span>
+                      <span className="thread-user">{post.author}</span>
+                      <span className="thread-time">{post.timestamp}</span>
                     </div>
-                    <div className="thread-text">{thread.text}</div>
+                    <div className="thread-text">{post.content}</div>
                   </div>
                   <div className="thread-actions">
-                    <button className={`vote-btn recommend ${votedItems[thread.id] === 'recommend' ? 'active' : ''}`} onClick={() => handleVote(thread.id, 'recommend')}>
+                    <button className={`vote-btn recommend ${votedItems[post.id] === 'recommend' ? 'active' : ''}`} onClick={() => handleVote(post.id, 'recommend')}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5m-7 7l7-7 7 7"/></svg>
-                      <span>{thread.recommendations}</span>
+                      <span>{post.hypeScore}</span>
                     </button>
-                    <button className={`vote-btn decline ${votedItems[thread.id] === 'decline' ? 'active' : ''}`} onClick={() => handleVote(thread.id, 'decline')}>
+                    <button className={`vote-btn decline ${votedItems[post.id] === 'decline' ? 'active' : ''}`} onClick={() => handleVote(post.id, 'decline')}>
                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14m-7-7l7 7 7-7"/></svg>
                     </button>
                   </div>
