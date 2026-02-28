@@ -1,34 +1,19 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import type { GraphNode, GraphEdge } from './types/data';
 
-interface Node {
-  id: string;
-  x: number;
-  y: number;
-  r: number;
-  color: string;
-  label: string;
+interface KnowledgeGraphProps {
+  initialNodes: GraphNode[];
+  edges: GraphEdge[];
 }
 
-const INITIAL_NODES: Node[] = [
-  { id: 'reze', x: 300, y: 240, r: 22, color: '#6c4ff6', label: "Reze's Flowers" },
-  { id: 'bomb', x: 170, y: 130, r: 16, color: '#ff4d6d', label: 'Bomb Devil' },
-  { id: 'death', x: 430, y: 100, r: 14, color: '#f7c948', label: 'Death Motif' },
-  { id: 'denji', x: 460, y: 280, r: 18, color: '#00e5c8', label: 'Denji' },
-  { id: 'lang', x: 160, y: 310, r: 13, color: '#7eb8ff', label: 'Language of Flowers' },
-  { id: 'chapter', x: 340, y: 390, r: 12, color: '#a98fff', label: 'Chapter 40-52' },
-];
+export const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ initialNodes, edges }) => {
+  const [nodes, setNodes] = useState<GraphNode[]>(initialNodes);
 
-const EDGES: [string, string][] = [
-  ['reze', 'bomb'], ['reze', 'death'], ['reze', 'denji'],
-  ['reze', 'lang'], ['reze', 'chapter'], ['bomb', 'death'], ['denji', 'chapter'],
-];
-
-export const KnowledgeGraph: React.FC = () => {
-  const [nodes, setNodes] = useState<Node[]>(INITIAL_NODES);
+  useEffect(() => {
+    if (initialNodes.length > 0) setNodes(initialNodes);
+  }, [initialNodes]);
   const [dragging, setDragging] = useState<string | null>(null);
-  const [tooltip, setTooltip] = useState<{ label: string; color: string; x: number; y: number; visible: boolean }>({
-    label: '', color: '', x: 0, y: 0, visible: false
-  });
+  const [tooltip, setTooltip] = useState<{ label: string; color: string; x: number; y: number; visible: boolean } | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
   const handleMouseDown = (id: string) => {
@@ -43,124 +28,139 @@ export const KnowledgeGraph: React.FC = () => {
     const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
 
-    const x = ((clientX - rect.left) / rect.width) * 600;
-    const y = ((clientY - rect.top) / rect.height) * 480;
+    const x = ((clientX - rect.left) / rect.width) * (svg.viewBox.baseVal.width);
+    const y = ((clientY - rect.top) / rect.height) * (svg.viewBox.baseVal.height);
 
-    setNodes(prev => prev.map(n => n.id === dragging ? { ...n, x: Math.max(30, Math.min(570, x)), y: Math.max(30, Math.min(450, y)) } : n));
-    
-    // Update tooltip position if visible
-    if (tooltip.visible) {
-      setTooltip(prev => ({ ...prev, x: clientX - rect.left + 14, y: clientY - rect.top - 10 }));
-    }
+    const node = nodes.find(n => n.id === dragging);
+    if (!node) return;
+
+    setNodes(prev => prev.map(n =>
+        n.id === dragging
+        ? { ...n, x: Math.max(n.r, Math.min(svg.viewBox.baseVal.width - n.r, x)), y: Math.max(n.r, Math.min(svg.viewBox.baseVal.height - n.r, y)) }
+        : n
+    ));
+
+    setTooltip(null);
   };
 
   const handleMouseUp = () => {
     setDragging(null);
   };
 
-  const handleMouseEnter = (e: React.MouseEvent, node: Node) => {
-    const svg = svgRef.current;
-    if (!svg) return;
-    const rect = svg.getBoundingClientRect();
+  const handleMouseEnter = (e: React.MouseEvent, node: GraphNode) => {
+    if (dragging) return;
     setTooltip({
       label: node.label,
       color: node.color,
-      x: e.clientX - rect.left + 14,
-      y: e.clientY - rect.top - 10,
+      x: e.clientX,
+      y: e.clientY - 10,
       visible: true
     });
   };
 
   const handleMouseLeave = () => {
-    setTooltip(prev => ({ ...prev, visible: false }));
+    setTooltip(null);
   };
 
+  const TooltipPortal = () => {
+    if (!tooltip) return null;
+    return (
+        <div
+          className="node-tooltip"
+          style={{
+            position: 'fixed',
+            left: tooltip.x,
+            top: tooltip.y,
+            transform: 'translate(-50%, -100%)',
+            borderColor: tooltip.color,
+            color: tooltip.color,
+            opacity: tooltip.visible ? 1 : 0,
+            background: 'var(--surface2)',
+            border: '1px solid rgba(108,79,246,.4)',
+            borderRadius: '8px',
+            padding: '.5rem .8rem',
+            fontSize: '.75rem',
+            pointerEvents: 'none',
+            transition: 'opacity .2s',
+            zIndex: 1000,
+            fontFamily: 'Space Mono, monospace',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 4px 20px rgba(0,0,0,.4)'
+          }}
+        >
+          {tooltip.label}
+        </div>
+    )
+  }
+
   return (
-    <div className="graph-canvas" style={{ width: '100%', height: '480px', position: 'relative', overflow: 'hidden' }}>
-      <div 
-        className="node-tooltip" 
-        style={{ 
-          left: tooltip.x, 
-          top: tooltip.y, 
-          borderColor: tooltip.color, 
-          color: tooltip.color, 
-          opacity: tooltip.visible ? 1 : 0,
-          position: 'absolute',
-          background: 'var(--surface2)',
-          border: '1px solid rgba(108,79,246,.4)',
-          borderRadius: '8px',
-          padding: '.5rem .8rem',
-          fontSize: '.75rem',
-          pointerEvents: 'none',
-          transition: 'opacity .2s',
-          zIndex: 10,
-          fontFamily: 'Space Mono, monospace',
-          whiteSpace: 'nowrap',
-          boxShadow: '0 4px 20px rgba(0,0,0,.4)'
-        }}
-      >
-        {tooltip.label}
-      </div>
-      <svg 
-        ref={svgRef}
-        viewBox="0 0 600 480" 
-        style={{ width: '100%', height: '100%' }}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onTouchMove={handleMouseMove}
-        onTouchEnd={handleMouseUp}
-      >
-        <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="4" result="blur"/>
-            <feMerge>
-              <feMergeNode in="blur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-
-        {EDGES.map(([aId, bId], i) => {
-          const a = nodes.find(n => n.id === aId);
-          const b = nodes.find(n => n.id === bId);
-          if (!a || !b) return null;
-          return (
-            <line 
-              key={i}
-              x1={a.x} y1={a.y} x2={b.x} y2={b.y} 
-              stroke="rgba(255,255,255,0.07)" 
-              strokeWidth="1.5" 
-            />
-          );
-        })}
-
-        {nodes.map(node => (
-          <g 
-            key={node.id} 
-            style={{ cursor: 'pointer' }}
-            onMouseDown={() => handleMouseDown(node.id)}
-            onTouchStart={() => handleMouseDown(node.id)}
-            onMouseEnter={(e) => handleMouseEnter(e, node)}
-            onMouseLeave={handleMouseLeave}
-          >
-            <circle 
-              cx={node.x} cy={node.y} r={node.r + 8} 
-              fill="none" stroke={node.color} strokeWidth="1" opacity=".2" 
-            />
-            <circle 
-              cx={node.x} cy={node.y} r={node.r} 
-              fill={node.color} filter="url(#glow)" opacity=".9" 
-            />
-            <text 
-              x={node.x} y={node.y + node.r + 14} 
-              textAnchor="middle" fill="#9194a8" fontSize="10" fontFamily="Space Mono, monospace"
-            >
-              {node.label}
-            </text>
+      <div className="graph-canvas" style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: '#0e1018' }}>
+        <TooltipPortal />
+        <svg
+          ref={svgRef}
+          viewBox="0 0 800 700"
+          style={{ width: '100%', height: '100%' }}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onTouchMove={handleMouseMove}
+          onTouchEnd={handleMouseUp}
+        >
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3.5" result="coloredBlur" />
+              <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <g>
+            {edges.map((edge) => {
+              const start = nodes.find(n => n.id === edge.from);
+              const end = nodes.find(n => n.id === edge.to);
+              if (!start || !end) return null;
+              return (
+                <line
+                  key={`${edge.from}-${edge.to}`}
+                  x1={start.x} y1={start.y}
+                  x2={end.x} y2={end.y}
+                  stroke="#414558" strokeWidth="1"
+                />
+              );
+            })}
           </g>
-        ))}
-      </svg>
-    </div>
-  );
-};
+          <g>
+            {nodes.map(node => (
+              <g
+                key={node.id}
+                style={{ cursor: dragging ? 'grabbing' : 'pointer' }}
+                onMouseDown={() => handleMouseDown(node.id)}
+                onTouchStart={() => handleMouseDown(node.id)}
+                onMouseEnter={(e) => handleMouseEnter(e, node)}
+                onMouseLeave={handleMouseLeave}
+              >
+                <circle
+                  cx={node.x} cy={node.y} r={node.r + (node.tier === 1 ? 8 : 4)}
+                  fill="none" stroke={node.color} strokeWidth="1" opacity=".2"
+                />
+                <circle
+                  cx={node.x} cy={node.y} r={node.r}
+                  fill={node.color} filter="url(#glow)" opacity=".9"
+                />
+                { (node.tier < 3) && (
+                  <text
+                    x={node.x} y={node.y + node.r + 12}
+                    textAnchor="middle" fill="#9194a8" fontSize="10" fontFamily="Space Mono, monospace"
+                    style={{pointerEvents: 'none'}}
+                  >
+                    {node.label}
+                  </text>
+                )}
+              </g>
+            ))}
+          </g>
+        </svg>
+      </div>
+    );
+  };

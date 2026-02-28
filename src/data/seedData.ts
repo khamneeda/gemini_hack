@@ -1,0 +1,275 @@
+import type { GraphNode, GraphEdge, PreviewCard, RelCard } from '../types/data';
+import type { CommunityPost } from '../types/post';
+
+const TIER_RADII = { 1: 22, 2: 9, 3: 5 } as const;
+
+export const SEED_NODES: GraphNode[] = [
+  // Tier 1
+  { id: 'hybe', x: 400, y: 300, r: TIER_RADII[1], color: '#6c4ff6', label: 'HYBE', tier: 1 },
+  { id: 'lesserafim', x: 150, y: 150, r: TIER_RADII[1], color: '#ff4d6d', label: 'LE SSERAFIM', tier: 1 },
+  { id: 'newjeans', x: 650, y: 150, r: TIER_RADII[1], color: '#f7c948', label: 'NewJeans', tier: 1 },
+  { id: 'bts', x: 400, y: 550, r: TIER_RADII[1], color: '#00e5c8', label: 'BTS', tier: 1 },
+
+  // HYBE Children (Tier 2)
+  { id: 'bighit', x: 280, y: 280, r: TIER_RADII[2], color: '#8972f8', label: 'Big Hit', tier: 2 },
+  { id: 'pledis', x: 320, y: 190, r: TIER_RADII[2], color: '#a695f9', label: 'Pledis', tier: 2 },
+  { id: 'ador', x: 520, y: 280, r: TIER_RADII[2], color: '#8972f8', label: 'ADOR', tier: 2 },
+  { id: 'sourcemusic', x: 480, y: 190, r: TIER_RADII[2], color: '#a695f9', label: 'Source Music', tier: 2 },
+  { id: 'belift', x: 280, y: 380, r: TIER_RADII[2], color: '#a695f9', label: 'Belift Lab', tier: 2 },
+  { id: 'koz', x: 520, y: 380, r: TIER_RADII[2], color: '#8972f8', label: 'KOZ Ent.', tier: 2 },
+  { id: 'txt', x: 400, y: 200, r: TIER_RADII[2], color: '#a695f9', label: 'TXT', tier: 2 },
+  { id: 'seventeen', x: 340, y: 420, r: TIER_RADII[2], color: '#8972f8', label: 'SEVENTEEN', tier: 2 },
+  { id: 'enhypen', x: 460, y: 420, r: TIER_RADII[2], color: '#8972f8', label: 'ENHYPEN', tier: 2 },
+
+  // LE SSERAFIM (Tier 2)
+  { id: 'chaewon', x: 80, y: 100, r: TIER_RADII[2], color: '#ff6b87', label: 'Chaewon', tier: 2 },
+  { id: 'sakura', x: 130, y: 50, r: TIER_RADII[2], color: '#ff8fa3', label: 'Sakura', tier: 2 },
+  { id: 'yunjin', x: 200, y: 70, r: TIER_RADII[2], color: '#ff6b87', label: 'Yunjin', tier: 2 },
+  { id: 'kazuha', x: 220, y: 150, r: TIER_RADII[2], color: '#ff8fa3', label: 'Kazuha', tier: 2 },
+  { id: 'eunchae', x: 180, y: 220, r: TIER_RADII[2], color: '#ff6b87', label: 'Eunchae', tier: 2 },
+  { id: 'unforgiven_album', x: 50, y: 200, r: TIER_RADII[2], color: '#ff8fa3', label: 'UNFORGIVEN', tier: 2 },
+  { id: 'easy_album', x: 80, y: 260, r: TIER_RADII[2], color: '#ff8fa3', label: 'EASY', tier: 2 },
+  { id: 'leniverse', x: 20, y: 140, r: TIER_RADII[2], color: '#ff6b87', label: 'Leniverse', tier: 2 },
+  // LE SSERAFIM (Tier 3)
+  { id: 'unforgiven_song', x: 20, y: 190, r: TIER_RADII[3], color: '#ffb3c1', label: 'UNFORGIVEN (feat. Nile Rodgers)', tier: 3 },
+  { id: 'eve_psyche_song', x: 40, y: 230, r: TIER_RADII[3], color: '#ffb3c1', label: "Eve, Psyche & The Bluebeard's wife", tier: 3 },
+  { id: 'easy_song', x: 80, y: 295, r: TIER_RADII[3], color: '#ffb3c1', label: 'Easy', tier: 3 },
+  { id: 'smart_song', x: 115, y: 285, r: TIER_RADII[3], color: '#ffb3c1', label: 'Smart', tier: 3 },
+
+  // NewJeans (Tier 2)
+  { id: 'minji', x: 580, y: 100, r: TIER_RADII[2], color: '#f8d36c', label: 'Minji', tier: 2 },
+  { id: 'hanni', x: 630, y: 50, r: TIER_RADII[2], color: '#f9dd8f', label: 'Hanni', tier: 2 },
+  { id: 'danielle', x: 700, y: 70, r: TIER_RADII[2], color: '#f8d36c', label: 'Danielle', tier: 2 },
+  { id: 'haerin', x: 720, y: 150, r: TIER_RADII[2], color: '#f9dd8f', label: 'Haerin', tier: 2 },
+  { id: 'hyein', x: 680, y: 220, r: TIER_RADII[2], color: '#f8d36c', label: 'Hyein', tier: 2 },
+  { id: 'getup_ep', x: 550, y: 200, r: TIER_RADII[2], color: '#f9dd8f', label: 'Get Up', tier: 2 },
+  { id: 'newjeans_ep', x: 580, y: 260, r: TIER_RADII[2], color: '#f9dd8f', label: 'New Jeans', tier: 2 },
+  { id: 'jeans_zips', x: 520, y: 140, r: TIER_RADII[2], color: '#f8d36c', label: "Jeans' Zips", tier: 2 },
+  // NewJeans (Tier 3)
+  { id: 'supershy_song', x: 520, y: 190, r: TIER_RADII[3], color: '#fae7b3', label: 'Super Shy', tier: 3 },
+  { id: 'eta_song', x: 540, y: 230, r: TIER_RADII[3], color: '#fae7b3', label: 'ETA', tier: 3 },
+  { id: 'hypeboy_song', x: 580, y: 295, r: TIER_RADII[3], color: '#fae7b3', label: 'Hype Boy', tier: 3 },
+  { id: 'attention_song', x: 615, y: 285, r: TIER_RADII[3], color: '#fae7b3', label: 'Attention', tier: 3 },
+
+  // BTS (Tier 2)
+  { id: 'rm', x: 300, y: 500, r: TIER_RADII[2], color: '#29e8d1', label: 'RM', tier: 2 },
+  { id: 'jin', x: 350, y: 470, r: TIER_RADII[2], color: '#52eadb', label: 'Jin', tier: 2 },
+  { id: 'suga', x: 450, y: 470, r: TIER_RADII[2], color: '#29e8d1', label: 'SUGA', tier: 2 },
+  { id: 'jhope', x: 500, y: 500, r: TIER_RADII[2], color: '#52eadb', label: 'j-hope', tier: 2 },
+  { id: 'jimin', x: 520, y: 560, r: TIER_RADII[2], color: '#29e8d1', label: 'Jimin', tier: 2 },
+  { id: 'v', x: 450, y: 620, r: TIER_RADII[2], color: '#52eadb', label: 'V', tier: 2 },
+  { id: 'jungkook', x: 350, y: 620, r: TIER_RADII[2], color: '#29e8d1', label: 'Jungkook', tier: 2 },
+  { id: 'be_album', x: 280, y: 580, r: TIER_RADII[2], color: '#52eadb', label: 'BE', tier: 2 },
+  { id: 'proof_album', x: 250, y: 540, r: TIER_RADII[2], color: '#52eadb', label: 'Proof', tier: 2 },
+  { id: 'run_bts', x: 300, y: 650, r: TIER_RADII[2], color: '#29e8d1', label: 'Run BTS', tier: 2 },
+  // BTS (Tier 3)
+  { id: 'dynamite_song', x: 250, y: 600, r: TIER_RADII[3], color: '#7aede4', label: 'Dynamite', tier: 3 },
+  { id: 'life_goes_on_song', x: 290, y: 610, r: TIER_RADII[3], color: '#7aede4', label: 'Life Goes On', tier: 3 },
+  { id: 'seven_song', x: 350, y: 655, r: TIER_RADII[3], color: '#7aede4', label: 'Seven', tier: 3 },
+];
+
+export const SEED_EDGES: GraphEdge[] = [
+  { from: 'hybe', to: 'lesserafim' }, { from: 'hybe', to: 'newjeans' }, { from: 'hybe', to: 'bts' },
+  { from: 'hybe', to: 'bighit' }, { from: 'hybe', to: 'pledis' }, { from: 'hybe', to: 'ador' },
+  { from: 'hybe', to: 'sourcemusic' }, { from: 'hybe', to: 'belift' }, { from: 'hybe', to: 'koz' },
+  { from: 'hybe', to: 'txt' }, { from: 'hybe', to: 'seventeen' }, { from: 'hybe', to: 'enhypen' },
+
+  { from: 'sourcemusic', to: 'lesserafim' },
+  { from: 'ador', to: 'newjeans' },
+  { from: 'bighit', to: 'bts' },
+
+  { from: 'lesserafim', to: 'chaewon' }, { from: 'lesserafim', to: 'sakura' },
+  { from: 'lesserafim', to: 'yunjin' }, { from: 'lesserafim', to: 'kazuha' },
+  { from: 'lesserafim', to: 'eunchae' }, { from: 'lesserafim', to: 'unforgiven_album' },
+  { from: 'lesserafim', to: 'easy_album' }, { from: 'lesserafim', to: 'leniverse' },
+  { from: 'unforgiven_album', to: 'unforgiven_song' }, { from: 'unforgiven_album', to: 'eve_psyche_song' },
+  { from: 'easy_album', to: 'easy_song' }, { from: 'easy_album', to: 'smart_song' },
+
+  { from: 'newjeans', to: 'minji' }, { from: 'newjeans', to: 'hanni' },
+  { from: 'newjeans', to: 'danielle' }, { from: 'newjeans', to: 'haerin' },
+  { from: 'newjeans', to: 'hyein' }, { from: 'newjeans', to: 'getup_ep' },
+  { from: 'newjeans', to: 'newjeans_ep' }, { from: 'newjeans', to: 'jeans_zips' },
+  { from: 'getup_ep', to: 'supershy_song' }, { from: 'getup_ep', to: 'eta_song' },
+  { from: 'newjeans_ep', to: 'hypeboy_song' }, { from: 'newjeans_ep', to: 'attention_song' },
+
+  { from: 'bts', to: 'rm' }, { from: 'bts', to: 'jin' }, { from: 'bts', to: 'suga' },
+  { from: 'bts', to: 'jhope' }, { from: 'bts', to: 'jimin' }, { from: 'bts', to: 'v' },
+  { from: 'bts', to: 'jungkook' }, { from: 'bts', to: 'be_album' },
+  { from: 'bts', to: 'proof_album' }, { from: 'bts', to: 'run_bts' },
+  { from: 'be_album', to: 'dynamite_song' }, { from: 'be_album', to: 'life_goes_on_song' },
+  { from: 'jungkook', to: 'seven_song' },
+];
+
+export const SEED_PREVIEWS: PreviewCard[] = [
+  { id: 'prev-1', title: 'LE SSERAFIM', meta: '5 members · HYBE', icon: '🎤', bgColor: 'rgba(255,77,109,.15)' },
+  { id: 'prev-2', title: 'NewJeans', meta: '5 members · ADOR', icon: '🐰', bgColor: 'rgba(247,201,72,.1)' },
+  { id: 'prev-3', title: 'BTS', meta: '7 members · HYBE', icon: '💜', bgColor: 'rgba(0,229,200,.1)' },
+  { id: 'prev-4', title: 'HYBE Corporation', meta: 'Record Label · South Korea', icon: '🏢', bgColor: 'rgba(108,79,246,.1)' },
+];
+
+export const SEED_HINTS: string[] = [
+  'LE SSERAFIM comeback',
+  'NewJeans new album',
+  'BTS members',
+  'HYBE artists',
+  'ADOR',
+];
+
+export const SEED_RELCARDS: RelCard[] = [
+  { id: 'rel-1', title: 'HYBE Corporation', meta: 'Parent Company · 45 nodes' },
+  { id: 'rel-2', title: 'NewJeans', meta: 'Sister Group · 32 nodes' },
+  { id: 'rel-3', title: 'UNFORGIVEN (Album)', meta: 'Related Concept · 12 nodes' },
+];
+
+export const SEED_POSTS: CommunityPost[] = [
+  {
+    id: 'post-001',
+    author: '@sakura_stan',
+    content: "Sakura was the center of AKB48's Team A before joining IZ*ONE through Produce 48, where she placed 2nd. Her transition to LE SSERAFIM in 2022 made her the first J-pop idol to successfully cross over to a major K-pop group.",
+    entity: 'LE SSERAFIM',
+    timestamp: '2026-02-25T14:30:00Z',
+    status: 'pending',
+    factCheckResult: null,
+    hypeScore: 312,
+  },
+  {
+    id: 'post-002',
+    author: '@fearnot99',
+    content: "LE SSERAFIM's 'UNFORGIVEN' featuring Nile Rodgers was the first K-pop song to debut at #1 on the Billboard Hot 100. The collaboration came after Bang Si-hyuk personally contacted Rodgers.",
+    entity: 'LE SSERAFIM',
+    timestamp: '2026-02-24T09:15:00Z',
+    status: 'pending',
+    factCheckResult: null,
+    hypeScore: 892,
+  },
+  {
+    id: 'post-003',
+    author: '@newjeans_fan',
+    content: "NewJeans debuted under ADOR, a subsidiary of HYBE founded by Min Heejin. Their debut single 'Attention' broke the record for the fastest K-pop debut MV to reach 100 million views on YouTube.",
+    entity: 'NewJeans',
+    timestamp: '2026-02-23T18:45:00Z',
+    status: 'pending',
+    factCheckResult: null,
+    hypeScore: 1100,
+  },
+  {
+    id: 'post-004',
+    author: '@bts_army4ever',
+    content: "BTS's 'Dynamite' was recorded entirely in English and became their first #1 on the Billboard Hot 100 in August 2020. The song was initially written for Bruno Mars but he turned it down.",
+    entity: 'BTS',
+    timestamp: '2026-02-22T11:20:00Z',
+    status: 'pending',
+    factCheckResult: null,
+    hypeScore: 654,
+  },
+  {
+    id: 'post-005',
+    author: '@kpop_theorist',
+    content: "HYBE acquired Pledis Entertainment in 2020 for $56 million, making SEVENTEEN and NU'EST part of the HYBE family. This was the largest K-pop label acquisition at the time.",
+    entity: 'HYBE Corporation',
+    timestamp: '2026-02-21T16:00:00Z',
+    status: 'pending',
+    factCheckResult: null,
+    hypeScore: 478,
+  },
+  {
+    id: 'post-006',
+    author: '@yunjin_vocals',
+    content: "Yunjin participated in Produce 48 alongside Sakura and Chaewon but was eliminated in Episode 11. She trained at PLEDIS before moving to Source Music, making her the only LE SSERAFIM member to have been under two HYBE subsidiaries.",
+    entity: 'LE SSERAFIM',
+    timestamp: '2026-02-20T08:30:00Z',
+    status: 'pending',
+    factCheckResult: null,
+    hypeScore: 445,
+  },
+  {
+    id: 'post-007',
+    author: '@chaewon_leader',
+    content: "Chaewon was originally cast for SM Entertainment's aespa before HYBE offered her a spot in LE SSERAFIM. She chose HYBE because they promised her the leader position.",
+    entity: 'LE SSERAFIM',
+    timestamp: '2026-02-19T20:10:00Z',
+    status: 'pending',
+    factCheckResult: null,
+    hypeScore: 328,
+  },
+  {
+    id: 'post-008',
+    author: '@hanni_australia',
+    content: "Hanni was born in Melbourne, Australia and is of Vietnamese descent. She was a member of the dance cover group Aemina before being recruited by ADOR through a global audition in 2019.",
+    entity: 'NewJeans',
+    timestamp: '2026-02-18T13:55:00Z',
+    status: 'approved',
+    factCheckResult: {
+      verdict: 'factual',
+      confidence: 85,
+      reasoning: "Hanni (Pham Ngoc Han) was indeed born in Melbourne, Australia and is of Vietnamese descent. She was part of a dance cover group before joining ADOR. These are well-documented facts from official profiles and interviews.",
+      checkedAt: '2026-02-18T14:30:00Z',
+    },
+    hypeScore: 567,
+  },
+  {
+    id: 'post-009',
+    author: '@jungkook_gc',
+    content: "Jungkook's solo single 'Seven' featuring Latto was produced by the same team that made 'Gangnam Style.' It stayed at #1 on Billboard Hot 100 for 11 consecutive weeks, breaking PSY's record.",
+    entity: 'BTS',
+    timestamp: '2026-02-17T10:40:00Z',
+    status: 'rejected',
+    factCheckResult: {
+      verdict: 'misleading',
+      confidence: 78,
+      reasoning: "While 'Seven' did debut at #1 on the Billboard Hot 100, it did not stay there for 11 consecutive weeks. The claim about the production team being the same as 'Gangnam Style' is unverified — the producers were Andrew Watt and others, not the Gangnam Style production team.",
+      checkedAt: '2026-02-17T11:00:00Z',
+    },
+    hypeScore: 389,
+  },
+  {
+    id: 'post-010',
+    author: '@Fearnot99',
+    content: "The debut concept masterfully incorporates the real-life journeys of Sakura and Chaewon, recasting their past experiences not as baggage, but as the foundation for their 'fearless' identity. This narrative resonated deeply with fans who followed their careers from Produce 48.",
+    entity: 'LE SSERAFIM',
+    timestamp: '2026-02-16T10:00:00Z',
+    status: 'approved',
+    factCheckResult: { verdict: 'factual', confidence: 90, reasoning: "Sakura and Chaewon both participated in Produce 48 and were IZ*ONE members before joining LE SSERAFIM. The 'fearless' concept is well-documented as the group's core identity.", checkedAt: '2026-02-16T11:00:00Z' },
+    hypeScore: 256,
+  },
+  {
+    id: 'post-011',
+    author: '@MV_Sleuth',
+    content: "The 'UNFORGIVEN' music video is a visual feast, blending classic Western film tropes with modern K-pop aesthetics. The fallen angel wings, the cowboy hats, and the desert landscapes all serve as metaphors for the group carving out their own path, unforgiven and unbothered.",
+    entity: 'LE SSERAFIM',
+    timestamp: '2026-02-15T14:20:00Z',
+    status: 'pending',
+    factCheckResult: null,
+    hypeScore: 198,
+  },
+  {
+    id: 'post-012',
+    author: '@ChoreoCritique',
+    content: "While the song is titled 'EASY,' the old-school hip-hop choreography is anything but. This intentional irony highlights the group's message: what looks effortless on the surface is the result of immense hard work and dedication behind the scenes.",
+    entity: 'LE SSERAFIM',
+    timestamp: '2026-02-14T09:30:00Z',
+    status: 'pending',
+    factCheckResult: null,
+    hypeScore: 128,
+  },
+  {
+    id: 'post-013',
+    author: '@newjeans_fan',
+    content: 'The way NewJeans\' MVs for "Cool With You" & "Get Up" are connected is pure genius. Min Heejin\'s creative direction creates a shared universe across their music videos.',
+    entity: 'NewJeans',
+    timestamp: '2026-02-13T16:45:00Z',
+    status: 'pending',
+    factCheckResult: null,
+    hypeScore: 98,
+  },
+  {
+    id: 'post-014',
+    author: '@bts_army4ever',
+    content: 'The transition from "ON" to "Dynamite" was a pivotal moment for BTS\'s global reach. ON showcased their artistic depth while Dynamite opened the door to mainstream Western audiences.',
+    entity: 'BTS',
+    timestamp: '2026-02-12T11:15:00Z',
+    status: 'pending',
+    factCheckResult: null,
+    hypeScore: 72,
+  },
+];

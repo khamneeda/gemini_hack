@@ -8,7 +8,7 @@ export async function factCheckPost(
 ): Promise<FactCheckResult> {
   const ai = new GoogleGenAI({ apiKey });
 
-  const prompt = `You are a fact-checker for a knowledge graph wiki about manga/anime, specifically "Chainsaw Man" by Tatsuki Fujimoto.
+  const prompt = `You are a fact-checker for a knowledge graph wiki about K-pop (Korean pop music), including artists, groups, labels, albums, and industry events.
 
 A user submitted the following community post about the entity "${entityName}":
 
@@ -24,9 +24,9 @@ Respond in valid JSON format only, with no markdown formatting:
 }
 
 Guidelines:
-- "factual": Claims are accurate based on known Chainsaw Man manga content
+- "factual": Claims are accurate based on known K-pop facts (official profiles, chart records, news)
 - "misleading": Claims contain errors, exaggerations, or misattributions
-- "unverified": Claims are speculative theories that cannot be confirmed or denied
+- "unverified": Claims are speculative theories or rumors that cannot be confirmed
 - Be specific about which parts are accurate or inaccurate`;
 
   const response = await ai.models.generateContent({
