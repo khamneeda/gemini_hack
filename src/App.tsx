@@ -42,7 +42,7 @@ function App() {
 
       <DetailPage 
         isVisible={currentPage === 'detail'}
-        onNavigate={() => showPage('home')}
+        onNavigate={showPage}
       />
 
       <AddDiggingPage 

@@ -5,7 +5,7 @@ import cardImg2 from '../assets/lesse3.jpg';
 
 interface DetailPageProps {
   isVisible: boolean;
-  onNavigate: (page: 'home') => void;
+  onNavigate: (page: 'home' | 'add') => void;
 }
 
 // Sample data for the timeline
@@ -127,8 +127,12 @@ export const DetailPage: React.FC<DetailPageProps> = ({ isVisible, onNavigate })
               <div className="rel-card-meta">Related Concept · 12 nodes</div>
             </div>
             
-            <button className="add-btn" style={{ marginTop: '3rem' }}>
-              ADD NEW ANALYSIS +
+            <button 
+              className="add-btn" 
+              style={{ marginTop: '3rem', padding: '0.8rem', fontSize: '0.85rem' }}
+              onClick={() => onNavigate('add')}
+            >
+              ADD NEW ANALYSIS
             </button>
           </div>
         </div>
