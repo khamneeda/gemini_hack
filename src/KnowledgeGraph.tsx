@@ -42,7 +42,7 @@ const INITIAL_NODES: Node[] = [
   { id: 'leniverse', x: 20, y: 140, r: TIER_RADII[2], color: '#ff6b87', label: 'Leniverse', tier: 2 },
   // Tier 3
   { id: 'unforgiven_song', x: 20, y: 190, r: TIER_RADII[3], color: '#ffb3c1', label: 'UNFORGIVEN (feat. Nile Rodgers)', tier: 3 },
-  { id: 'eve_psyche_song', x: 40, y: 230, r: TIER_RADII[3], color: '#ffb3c1', label: "Eve, Psyche & The Bluebeard's wife", tier: 3 },
+  { id: 'eve_psyche_song', x: 40, y: 230, r: TIER_RADII[3], color: '#ffb3c1', label: 'Eve, Psyche & The Bluebeard's wife', tier: 3 },
   { id: 'easy_song', x: 80, y: 295, r: TIER_RADII[3], color: '#ffb3c1', label: 'Easy', tier: 3 },
   { id: 'smart_song', x: 115, y: 285, r: TIER_RADII[3], color: '#ffb3c1', label: 'Smart', tier: 3 },
 
@@ -55,7 +55,7 @@ const INITIAL_NODES: Node[] = [
   { id: 'hyein', x: 680, y: 220, r: TIER_RADII[2], color: '#f8d36c', label: 'Hyein', tier: 2 },
   { id: 'getup_ep', x: 550, y: 200, r: TIER_RADII[2], color: '#f9dd8f', label: 'Get Up', tier: 2 },
   { id: 'newjeans_ep', x: 580, y: 260, r: TIER_RADII[2], color: '#f9dd8f', label: 'New Jeans', tier: 2 },
-  { id: 'jeans_zips', x: 520, y: 140, r: TIER_RADII[2], color: '#f8d36c', label: "Jeans' Zips", tier: 2 },
+  { id: 'jeans_zips', x: 520, y: 140, r: TIER_RADII[2], color: '#f8d36c', label: 'Jeans' Zips', tier: 2 },
   // Tier 3
   { id: 'supershy_song', x: 520, y: 190, r: TIER_RADII[3], color: '#fae7b3', label: 'Super Shy', tier: 3 },
   { id: 'eta_song', x: 540, y: 230, r: TIER_RADII[3], color: '#fae7b3', label: 'ETA', tier: 3 },
@@ -146,7 +146,6 @@ export const KnowledgeGraph: React.FC = () => {
     if (dragging) return;
     const svg = svgRef.current;
     if (!svg) return;
-    const rect = svg.getBoundingClientRect();
     
     setTooltip({
       label: node.label,

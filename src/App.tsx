@@ -4,8 +4,9 @@ import { Navbar } from './components/Navbar'
 import { HomePage } from './pages/HomePage'
 import { ResultsPage } from './pages/ResultsPage'
 import { DetailPage } from './pages/DetailPage'
+import { AddDiggingPage } from './pages/AddDiggingPage'
 
-type Page = 'home' | 'results' | 'detail';
+type Page = 'home' | 'results' | 'detail' | 'add';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -42,6 +43,11 @@ function App() {
       <DetailPage 
         isVisible={currentPage === 'detail'}
         onNavigate={() => showPage('home')}
+      />
+
+      <AddDiggingPage 
+        isVisible={currentPage === 'add'}
+        onNavigate={showPage}
       />
     </div>
   )
