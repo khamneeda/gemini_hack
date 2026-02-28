@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import type { RelCard } from '../types/data';
 import type { CommunityPost } from '../types/post';
 import { initializePosts, loadRelCards } from '../services/postStorage';
+import heroImg from '../assets/lesse1.jpg';
+import cardImg1 from '../assets/lesse2.jpg';
+import cardImg2 from '../assets/lesse3.jpg';
 
 interface DetailPageProps {
   isVisible: boolean;
-  onNavigate: (page: 'home') => void;
+  onNavigate: (page: 'home' | 'add') => void;
 }
 
 export const DetailPage: React.FC<DetailPageProps> = ({ isVisible, onNavigate }) => {
@@ -23,62 +26,75 @@ export const DetailPage: React.FC<DetailPageProps> = ({ isVisible, onNavigate })
     <div id="page-detail" className={`page ${!isVisible ? 'hidden' : ''}`}>
        <style>{`
         .community-thread {
-          background: var(--surface);
+          background: rgba(255, 255, 255, 0.02);
           border: 1px solid var(--border);
-          border-radius: 12px;
-          padding: 1rem 1.25rem;
-          margin-bottom: .75rem;
-          transition: border-color .2s;
+          border-radius: 24px;
+          padding: 1.5rem;
+          margin-bottom: 1rem;
+          transition: all .3s;
+          backdrop-filter: blur(10px);
         }
         .community-thread:hover {
-          border-color: rgba(108,79,246,.3);
+          border-color: var(--accent);
+          box-shadow: 0 0 20px var(--accent-glow);
         }
         .community-thread .thread-meta {
           display: flex;
           align-items: center;
-          gap: .5rem;
-          margin-bottom: .4rem;
+          gap: .6rem;
+          margin-bottom: .5rem;
         }
         .community-thread .thread-user {
-          font-size: .78rem;
-          font-weight: 600;
-          font-family: 'Space Mono', monospace;
-          color: var(--accent2);
+          font-size: .85rem;
+          font-weight: 800;
+          color: var(--accent3);
+          text-transform: uppercase;
         }
         .community-thread .thread-time {
-          font-size: .68rem;
+          font-size: .75rem;
           color: var(--muted);
         }
         .community-thread .thread-text {
-          font-size: .85rem;
-          line-height: 1.6;
-          color: #a8abc0;
+          font-size: .95rem;
+          line-height: 1.7;
+          color: rgba(255, 255, 255, 0.7);
         }
         .community-thread .thread-recs {
-          font-size: .72rem;
+          font-size: .8rem;
           color: var(--muted);
-          font-family: 'Space Mono', monospace;
-          margin-top: .4rem;
+          font-weight: 700;
+          margin-top: .5rem;
+        }
+        .hover-zoom:hover {
+          transform: scale(1.05);
         }
       `}</style>
-      <div style={{paddingTop:'58px'}}>
-        <div className="detail-hero">
-          <div className="detail-hero-fallback" style={{background:'linear-gradient(135deg, #ff4d6d 0%, #ff8fa3 40%, #ffb3c1 100%)'}}>
-            <svg style={{position:'absolute',inset:0,width:'100%',height:'100%',opacity:.15}} viewBox="0 0 800 280">
-              <circle cx="400" cy="140" r="200" fill="#fff" opacity=".1"/>
-            </svg>
-          </div>
+      <div style={{paddingTop: 0}}>
+        <div className="detail-hero" style={{margin: 0, width: '100%', borderRadius: 0}}>
+          <img
+            src={heroImg}
+            className="detail-hero-img"
+            alt="LE SSERAFIM"
+          />
           <div className="detail-hero-overlay"></div>
           <div className="detail-hero-content">
-            <div>
-              <div className="detail-tags">
-                <span className="tag tag-purple">GROUP</span>
-                <span className="tag tag-teal">HYBE</span>
-              </div>
-              <div className="detail-title">LE SSERAFIM:<br/>The 'FEARLESS' Concept</div>
+            <div className="detail-tags">
+              <span className="tag tag-purple">GROUP</span>
+              <span className="tag tag-teal">HYBE</span>
+              <span className="tag tag-red">TRENDING</span>
             </div>
-            <button className="btn-primary" onClick={() => onNavigate('home')}>← Back</button>
+            <h1 className="detail-title">LE SSERAFIM</h1>
+            <p style={{color:'var(--muted)',fontWeight:800,letterSpacing:'0.2em',textTransform:'uppercase',marginTop:'1.5rem'}}>
+              The 'FEARLESS' Concept Analysis
+            </p>
           </div>
+          <button
+            className="btn-ghost"
+            onClick={() => onNavigate('home')}
+            style={{position:'absolute',top:100,left:'4rem',zIndex:10,background:'rgba(0,0,0,0.3)',backdropFilter:'blur(10px)'}}
+          >
+            ← BACK TO EXPLORE
+          </button>
         </div>
 
         <div className="detail-body">
@@ -86,10 +102,43 @@ export const DetailPage: React.FC<DetailPageProps> = ({ isVisible, onNavigate })
             <div className="detail-stats">
               <div className="stat-item">📝 <strong>2.1k</strong> Contributions</div>
               <div className="stat-item">🕸 <strong>128</strong> Nodes</div>
+              <div className="stat-item">🔥 <strong>98%</strong> Hot Score</div>
             </div>
+
+            <div className="section-title">Visual Narrative Analysis</div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))',gap:'2.5rem',marginBottom:'5rem'}}>
+              <div className="analysis-card" style={{padding:0,borderRadius:32,overflow:'hidden'}}>
+                <div style={{height:280,overflow:'hidden'}}>
+                  <img src={cardImg1} alt="UNFORGIVEN Performance" style={{width:'100%',height:'100%',objectFit:'cover',transition:'transform 0.5s ease'}} className="hover-zoom" />
+                </div>
+                <div style={{padding:'2rem'}}>
+                  <div style={{color:'var(--accent)',fontWeight:800,fontSize:'0.85rem',marginBottom:'0.75rem',textTransform:'uppercase',letterSpacing:'0.1em'}}>CHOREOGRAPHY</div>
+                  <h3 style={{fontFamily:'Syne',fontSize:'1.6rem',marginBottom:'1rem',fontWeight:800}}>UNFORGIVEN PERFORMANCE</h3>
+                  <p style={{color:'rgba(255,255,255,0.6)',fontSize:'1rem',lineHeight:1.7}}>
+                    The powerful and synchronized movements reflect the group's unwavering determination to break social taboos.
+                  </p>
+                </div>
+              </div>
+              <div className="analysis-card" style={{padding:0,borderRadius:32,overflow:'hidden'}}>
+                <div style={{height:280,overflow:'hidden'}}>
+                  <img src={cardImg2} alt="FEARLESS Storyline" style={{width:'100%',height:'100%',objectFit:'cover',transition:'transform 0.5s ease'}} className="hover-zoom" />
+                </div>
+                <div style={{padding:'2rem'}}>
+                  <div style={{color:'var(--accent3)',fontWeight:800,fontSize:'0.85rem',marginBottom:'0.75rem',textTransform:'uppercase',letterSpacing:'0.1em'}}>CONCEPT ART</div>
+                  <h3 style={{fontFamily:'Syne',fontSize:'1.6rem',marginBottom:'1rem',fontWeight:800}}>FEARLESS STORYLINE</h3>
+                  <p style={{color:'rgba(255,255,255,0.6)',fontSize:'1rem',lineHeight:1.7}}>
+                    A visual deep-dive into the metaphors of the 'fallen angel' and the 'undefeated' athlete.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div className="section-title">Community Posts</div>
             {sortedPosts.map((post) => (
               <div className="community-thread" key={post.id}>
+                {post.thumbnail && (
+                  <img src={post.thumbnail} alt="" style={{width:'100%',maxHeight:200,objectFit:'cover',borderRadius:16,marginBottom:'.75rem'}} />
+                )}
                 <div className="thread-meta">
                   <span className="thread-user">{post.author}</span>
                   <span className="thread-time">{post.timestamp}</span>
@@ -108,6 +157,14 @@ export const DetailPage: React.FC<DetailPageProps> = ({ isVisible, onNavigate })
                 <div className="rel-card-meta">{card.meta}</div>
               </div>
             ))}
+
+            <button
+              className="add-btn"
+              style={{marginTop:'3rem',padding:'0.8rem',fontSize:'0.85rem'}}
+              onClick={() => onNavigate('add')}
+            >
+              ADD NEW ANALYSIS
+            </button>
           </div>
         </div>
       </div>

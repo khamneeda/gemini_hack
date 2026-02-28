@@ -18,6 +18,7 @@ export interface CommunityPost {
   status: PostStatus;
   factCheckResult: FactCheckResult | null;
   hypeScore: number;
+  thumbnail?: string;
 }
 
 export type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected';
